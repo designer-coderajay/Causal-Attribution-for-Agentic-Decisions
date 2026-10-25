@@ -1333,3 +1333,21 @@ Type 3, and both are legible in greyscale. `docs/ARXIV-SUBMISSION.md` holds the
 metadata for the submission form, including the abstract trimmed to 1916
 characters against arXiv's 1920-character limit; the manuscript's own abstract
 was trimmed to match rather than allowed to diverge from it.
+
+## 2026-10-25: README one-look section
+
+Docs only. No code, config, result or preregistration file changed. Added the
+interactive estimator bench (`docs/anatomy/`), three illustrations
+(`docs/illustrations/`, hand-authored vector drawings) and a step-by-step
+section to `README.md`. The figure and drawings are illustrative and make no
+statistical claim; only the direct effect 0.25, the exact zero on about one run
+in ten, the contrast between the marginal and same-dice readings, and the two
+calendar dates are taken from the paper as the README states them.
+
+Re-ran `bash verify.sh` in a fresh sandbox on Python 3.13.17 with numpy 1.26.4:
+ALL GREEN (10 validators, citation coverage, 81 paper-number checks, 85 tests).
+That run rewrites seven files in `results/` with a different `env.python` and
+`env_hash` and last-digit float differences from the committed Python 3.11.9
+artifacts. Those rewritten files were discarded (`git checkout -- results`) and
+not committed, so the committed artifacts are unchanged. Anyone reproducing on a
+different Python should expect the same.

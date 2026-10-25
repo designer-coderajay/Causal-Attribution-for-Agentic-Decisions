@@ -18,6 +18,55 @@ reproducibility claim the paper makes, as against reproducibility on one laptop.
 
 ---
 
+## The idea in one look
+
+<p align="center">
+  <img src="docs/illustrations/16-fresh-or-same-dice.png" alt="Two rows of dice. With fresh dice the inert step and the decisive step read the same. With the same dice they separate." width="860"><br>
+  <sub><b>Fresh dice or the same dice.</b> Test a step by changing it and letting the rest re-decide. With fresh noise the inert and the decisive step read the same; with the same noise they separate.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/illustrations/17-zero-is-not-nothing.png" alt="A dial reads exactly zero for the same-dice total effect, while a note says the step's direct effect is 0.25 and that zero does not prove the step did nothing." width="860"><br>
+  <sub><b>Our own fix has a failure mode.</b> On about one run in ten the same-dice reading for the decisive step is exactly zero, although its direct effect is 0.25.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/illustrations/18-evidence-gap.png" alt="A timeline from 2 August 2026, when the right to an explanation and incident investigation apply, to 2 December 2027, when logging and technical documentation are required, with the stretch between marked as the gap." width="860"><br>
+  <sub><b>The Act's calendar opens a gap</b>, as stated in the paper. Check the Official Journal for current dates.</sub>
+</p>
+
+### The study as one bench
+
+<p align="center">
+  <img src="docs/anatomy/estimator-bench.gif" alt="An animated isometric bench. A plunger on a gantry tests step A, then step B, on a rail of four steps. A fresh die changes face while a same die does not. Three dials read the marginal effect, which is the same for both steps, the same-dice effect, which separates them, and the direct effect of step B, which reads 0.25. Later the same-dice dial drops to exactly zero for step B." width="900">
+</p>
+
+| On the bench | In the study | Where to look |
+|---|---|---|
+| The rail of four pads (start, A, B, outcome) | A planted synthetic agent chain with a known causal structure: A is causally inert, B is decisive | [`src/p2/scm.py`](src/p2/scm.py) |
+| The plunger | An intervention on one step | [`src/p2/effects.py`](src/p2/effects.py) |
+| The fresh die | Downstream steps re-decide under fresh noise: the marginal total effect of prior work | `TE_marg` in `effects.py` |
+| The same die | Downstream steps re-decide under the factual noise: the common-random-numbers total effect | `TE_crn` in `effects.py`, [`src/p2/coupling.py`](src/p2/coupling.py) |
+| Dial "marginal" and dial "same dice" | The two total effects, read for each step | [`docs/DERIVATIONS.md`](docs/DERIVATIONS.md) sections 2 and 3 |
+| Dial "direct" | The direct effect: downstream actions pinned to the factual ones | `DE` in `effects.py` |
+| The "exact 0" lamp | The failure mode of the common-random-numbers estimator | [`scripts/validate_crn_degeneracy.py`](scripts/validate_crn_degeneracy.py) |
+
+Open [`docs/anatomy/estimator-bench-light.html`](docs/anatomy/estimator-bench-light.html) in a browser to scrub through it (details in [`docs/anatomy/README.md`](docs/anatomy/README.md)). The direct effect, the exact zero and the contrast between the dials are from the paper; the needle heights for the marginal and same-dice readings and the dice faces are drawn for the picture, and the whole model is synthetic.
+
+### Step by step
+
+| Step | What happens | Where |
+|---|---|---|
+| **1. Plant a known answer** | Build a synthetic agent chain whose causal structure is derived by hand, so the right answer is known before any estimator runs. | `src/p2/scm.py`, `docs/DERIVATIONS.md` |
+| **2. Make the noise reusable** | Every random draw is a pure function of (seed, step, replicate), never of call order. That is what makes common random numbers possible. | `src/p2/scm.py` |
+| **3. Estimate effects per step** | The marginal and common-random-numbers total effects, the direct effect, and the mediated effect (their difference). | `src/p2/effects.py`, `src/p2/mediation.py` |
+| **4. Couple across divergent contexts** | Maximal coupling has a closed form, `1 - TV`, and a cost; the order-dependent alternatives do not agree with it. | `src/p2/coupling.py` |
+| **5. Read what a trace would say** | Attributors that use only fields a real observability trace carries are compared with what intervention shows. | `src/p2/observability.py`, `src/p2/ranking.py` |
+| **6. Check against closed forms** | Each validator asserts against a hand derivation or an exact closed form, never against another estimator. | `scripts/validate_*.py` |
+| **7. Verify everything** | `verify.sh` runs the validators, the citation check, the tests and the manuscript number audit, and prints `ALL GREEN` or fails. | `verify.sh`, CI |
+
+---
+
 ## What the paper argues
 
 A provider of a high-risk AI system must keep records that make a decision
